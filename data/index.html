@@ -1,0 +1,102 @@
+﻿<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="style.css" rel="stylesheet" />
+    <script type="text/javascript">
+        window.addEventListener('load', function () {
+            var address = window.location.host;
+            if (address == "")
+                address = "192.168.1.21";
+            httpGetAsync("http://" + address + "/s", function (x) {
+                setImages(x);
+            });
+            var images = document.getElementsByClassName('img');
+            for (var i = 0; i < images.length; i++) {
+
+                images[i].onerror = function () {
+                    var im = this;
+                    setTimeout(function () {
+                        im.src = "bulbOff.png";
+                        console.log("Tryna load");
+                    }, 100);
+                };
+                images[i].src = "bulbOff.png";
+
+                images[i].onclick = function () {
+                    var idx = this.getAttribute("data-idx");
+                    var that = this;
+                    var val = this.getAttribute("src").endsWith("On.png") ? 0 : 1;
+                    httpGetAsync("http://" + address + "/d?idx=" + idx + "&val=" + val, function (x) {
+                        that.setAttribute("src", "bulbO" + (val == 0 ? "ff" : "n") + ".png");
+                    });
+                }
+            }
+        });
+
+        function setImages(val) {
+            var images = document.getElementsByClassName('img');
+            for (var i = 0; i < images.length; i++) {
+                images[i].setAttribute("src", "bulbO" + (val[i] == "0" ? "ff" : "n") + ".png");
+            }
+        }
+
+        function httpGetAsync(theUrl, callback) {
+            try {
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                        callback(xmlHttp.responseText);
+                }
+                xmlHttp.open("GET", theUrl, true);
+                xmlHttp.send(null);
+            } catch (e) {
+                setTimeout(function () {
+                    httpGetAsync(theUrl, callback);
+                }, 500);
+            }
+        }
+    </script>
+</head>
+<body scroll="no">
+    <table>
+        <tr>
+            <td>
+                <img src="" class="img" data-idx="0" />
+                <i class="desc">Input 1</i>
+            </td>
+            <td>
+                <img src="" class="img" data-idx="1" />
+                <i class="desc">Input 2</i>
+            </td>
+            <td>
+                <img src="" class="img" data-idx="2" />
+                <i class="desc">Input 3</i>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="" class="img" data-idx="3" />
+                <i class="desc">Input 4</i>
+            </td>
+            <td>
+                <img src="" class="img" data-idx="4" />
+                <i class="desc">Input 5</i>
+            </td>
+            <td>
+                <img src="" class="img" data-idx="5" />
+                <i class="desc">Input 6</i>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="" class="img" data-idx="6" />
+                <i class="desc">Input 7</i>
+            </td>
+            <td>
+                <img src="" class="img" data-idx="7" />
+                <i class="desc">Input 8</i>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
